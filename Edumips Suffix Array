@@ -41,15 +41,14 @@ LB R5, ARR(R2)				;ARR[i]
 LB R6, DNA(R4) 				;DNA[ARR[i - 1]
 LB R7, DNA(R5) 				;DNA[ARR[i]
 
-DSUBU R10, R6, R7
-BGEZ R10, L5 				;if (DNA[i-1] <= DNA[i]) goto L5
+DSUBU R23, R7, R6
+BGEZ R23, L5 				;if (DNA[i-1] <= DNA[i]) goto L5
 SB R5, ARR(R3) 				;swap(A[i-1], A[i])
 SB R4, ARR(R2)
 DADDU R9, R2, R0 			;newn = i
 L5: DADDIU R2, R2, 0x0001 	;i += 1
-DSUBU R4, R1, R2
-DADDIU R4, R4, 0xFFFF
-BGEZ R4, L4					;for i from 1 to n - 1
+DSUBU R23, R1, R2
+BNEZ R23, L4				;for i from 1 to n - 1
 
 DADDU R8, R0, R9 			;n = newn
 DADDU R9, R0, R0 			;newn = 0
@@ -79,9 +78,8 @@ SB R12, ARR(R10)
 DADDU R17, R10, R0 			;newn = i	
 
 L8: DADDIU R10, R10, 0x0001 ;i += 1
-DSUBU R12, R1, R10
-DADDIU R12, R12, 0xFFFF
-BGEZ R12, L7				;for i from 1 to n - 1
+DSUBU R23, R1, R10
+BNEZ R23, L7				;for i from 1 to n - 1
 
 DADDU R16, R0, R17 			;n = newn
 DADDU R17, R0, R0 			;newn = 0
