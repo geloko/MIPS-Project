@@ -1,5 +1,5 @@
 .data
-DNA:  .ascii "dcba$"
+DNA: .ascii "dcba$"
 ARR: .space 0x28
 
 .code
@@ -79,6 +79,3 @@ BLTC R10, R1, L7	;for i from 1 to n - 1
 DADDU R16, R0, R17 	;n = newn
 DADDU R17, R0, R0 	;newn = 0
 BNEC R0, R16, L6 	;while n != 0
-
-
-
