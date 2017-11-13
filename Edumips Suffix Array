@@ -1,47 +1,91 @@
 .data
-DNA:   .ascii "banananab$"
+DNA: .ascii "banana$"
 ARR: .space 0x28
 
 .code
 
 ;get the length of string
-L1: LB R2, DNA(R1)
-DADDIU R1, R1, 0x0001
-BNE R0, R2, L1
-DADDIU R1, R1, 0xFFFF
+L1: LB R2, DNA(R1)			;load byte DNA(R1) to R2
+DADDIU R1, R1, 0x0001		;R1 += 1
+BNE R0, R2, L1				;while (R2 != 0) goto L1
+DADDIU R1, R1, 0xFFFF		;R1 -= 1
 
 ;initialize the suffix array
-DADDU R2, R1, R0
-L2: DADDIU R2, R2, 0xFFFF
-SB R2, ARR(R2)
-BNE R0, R2, L2
+DADDU R2, R1, R0 			;R2 = R1 + 0
+L2: DADDIU R2, R2, 0xFFFF	;R2 -= 1
+SB R2, ARR(R2)				;store byte ARR(R2) to R2
+BNE R0, R2, L2				;while (R2 != 0) goto L2
+
+;R1 = length(a)
+;R2/R10 = i
+;R3/R11 = i - 1
+;R4/R12 = ARR[i-1]
+;R5/R13 = ARR[i]
+;R6/R14 = DNA[ARR[i-1]]
+;R7/R15 = DNA[ARR[i]]
+;R8/R16 = n
+;R9/R17 = newn
+;R18 = temp
+;R19 = ARR[i-1] + temp
+;R20 = ARR[i] + temp
+;R21 = DNA[ARR[i-1] + temp]
+;R22 = DNA[ARR[i] + temp]
+;R23 = temp operation 
 
 ;sort the first character of the suffixes (bubble sort)
-
-DADDU R8, R0, R1  ; n = length(a)
-L3: DADDIU R2, R0, 0x0001  ; i = 1
-L4: DADDIU R3, R2, 0xFFFF; i - 1
-LB R4, ARR(R3)
-LB R5, ARR(R2)
-LB R6, DNA(R4) ; A[i - 1]
-LB R7, DNA(R5) ; A[i]
+DADDU R8, R0, R1  			;n = length(a)
+L3: DADDIU R2, R0, 0x0001  	;i = 1
+L4: DADDIU R3, R2, 0xFFFF	;i - 1
+LB R4, ARR(R3)				;ARR[i - 1]
+LB R5, ARR(R2)				;ARR[i]
+LB R6, DNA(R4) 				;DNA[ARR[i - 1]
+LB R7, DNA(R5) 				;DNA[ARR[i]
 
 DSUBU R10, R6, R7
-BGEZ R10, L5 ;if(A[i-1] > A[i])
-SB R5, ARR(R3) ; swap(A[i-1], A[i])
+BGEZ R10, L5 				;if (DNA[i-1] <= DNA[i]) goto L5
+SB R5, ARR(R3) 				;swap(A[i-1], A[i])
 SB R4, ARR(R2)
-DADDU R9, R2, R0 ; newn = i
-L5: DADDIU R2, R2, 0x0001 ; i++
+DADDU R9, R2, R0 			;newn = i
+L5: DADDIU R2, R2, 0x0001 	;i += 1
 DSUBU R4, R1, R2
 DADDIU R4, R4, 0xFFFF
-BGEZ R4, L4; for i from 1 to n - 1
+BGEZ R4, L4					;for i from 1 to n - 1
 
-DADDU R8, R0, R9 ;n = newn
-DADDU R9, R0, R0 ;newn = 0
-BNE R0, R8, L3 ;while n !=0
+DADDU R8, R0, R9 			;n = newn
+DADDU R9, R0, R0 			;newn = 0
+BNE R0, R8, L3 				;while n !=0
 
 ;sort while not unique
+DADDU R16, R0, R1   		;n = length(DNA)
+L6: DADDIU R10, R0, 0x0001 	;i = 1
+L7: DADDIU R11, R10, 0xFFFF	;i - 1
+LB R12, ARR(R11)			;ARR[i-1]
+LB R13, ARR(R10)			;ARR[i]
+LB R14, DNA(R12)			;DNA[ARR[i-1]]
+LB R15, DNA(R13)			;DNA[ARR[i]]
 
+BNE R14, R15, L8 			;if (DNA[ARR[i - 1]] != DNA[ARR[i]]) goto L8
+DADDU R18, R0, R0 			;temp = 0
+L9: DADDIU R18, R18, 0x0001	;temp += 1
+DADDU R19, R18, R12			;ARR[i-1] + temp
+DADDU R20, R18, R13			;ARR[i] + temp	
+LB R21, DNA(R19)			;DNA[ARR[i-1] + temp]
+LB R22, DNA(R20)			;DNA[ARR[i] + temp]
+BEQ R21, R22, L9			;while (DNA[ARR[i - 1] + temp] == DNA[ARR[i] + temp]) goto L9
+DSUBU R23, R22, R21
+BGEZ R23, L8				;if (DNA[ARR[i - 1] + temp] <= DNA[ARR[i] + temp]) goto L8		
+SB R13, ARR(R11) 			;swap(ARR[i - 1], ARR[i])
+SB R12, ARR(R10)	
+DADDU R17, R10, R0 			;newn = i	
+
+L8: DADDIU R10, R10, 0x0001 ;i += 1
+DSUBU R12, R1, R10
+DADDIU R12, R12, 0xFFFF
+BGEZ R12, L7				;for i from 1 to n - 1
+
+DADDU R16, R0, R17 			;n = newn
+DADDU R17, R0, R0 			;newn = 0
+BNE R0, R16, L6 			;while n != 0
 
 
 
