@@ -1,5 +1,5 @@
 .data
-DNA:   .ascii "banana$"
+DNA:   .ascii "banananab$"
 ARR: .space 0x28
 
 .code
@@ -27,7 +27,6 @@ LB R6, DNA(R4) ; A[i - 1]
 LB R7, DNA(R5) ; A[i]
 
 DSUBU R10, R6, R7
-DADDIU R10, R10, 0x0001
 BGEZ R10, L5 ;if(A[i-1] > A[i])
 SB R5, ARR(R3) ; swap(A[i-1], A[i])
 SB R4, ARR(R2)
