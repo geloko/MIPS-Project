@@ -1,5 +1,5 @@
 .data
-DNA: .ascii "dcba$"
+DNA: .ascii "hepaticocholecystostcholecystenterostomy$"
 ARR: .space 0x28
 
 .code
@@ -37,7 +37,7 @@ L3: DADDIU R2, R0, #0001  	;i = 1
 L4: DADDIU R3, R2, #FFFF	;i - 1
 LB R4, ARR(R3)	;ARR[i - 1]
 LB R5, ARR(R2)	;ARR[i]
-LB R6, DNA(R4)	;DNA[ARR[i - 1]]
+LB R6, DNA(R4)	;DNA[ARR[i-1]]
 LB R7, DNA(R5)	;DNA[ARR[i]]
 
 BLEC R6, R7, L5 	;if (DNA[i-1] <= DNA[i]) goto L5
@@ -49,7 +49,7 @@ BLTC R2, R1, L4	;for i from 1 to n - 1
 
 DADDU R8, R0, R9 	;n = newn
 DADDU R9, R0, R0 	;newn = 0
-BNEC R0, R8, L3 	;while n !=0
+BNEC R0, R8, L3 	;while n != 0
 
 ;sort while not unique
 DADDU R16, R0, R1   	;n = length(DNA)
@@ -60,16 +60,16 @@ LB R13, ARR(R10)	;ARR[i]
 LB R14, DNA(R12)	;DNA[ARR[i-1]]
 LB R15, DNA(R13)	;DNA[ARR[i]]
 
-BNEC R14, R15, L8 	;if (DNA[ARR[i - 1]] != DNA[ARR[i]]) goto L8
+BNEC R14, R15, L8 	;if (DNA[ARR[i-1]] != DNA[ARR[i]]) goto L8
 DADDU R18, R0, R0 	;temp = 0
 L9: DADDIU R18, R18, #0001	;temp += 1
 DADDU R19, R18, R12	;ARR[i-1] + temp
 DADDU R20, R18, R13	;ARR[i] + temp	
 LB R21, DNA(R19)	;DNA[ARR[i-1] + temp]
 LB R22, DNA(R20)	;DNA[ARR[i] + temp]
-BEQC R21, R22, L9	;while (DNA[ARR[i - 1] + temp] == DNA[ARR[i] + temp]) goto L9
-BLEC R21, R22, L8	;if (DNA[ARR[i - 1] + temp] <= DNA[ARR[i] + temp]) goto L8
-SB R13, ARR(R11) 	;swap(ARR[i - 1], ARR[i])
+BEQC R21, R22, L9	;while (DNA[ARR[i-1] + temp] == DNA[ARR[i] + temp]) goto L9
+BLEC R21, R22, L8	;if (DNA[ARR[i-1] + temp] <= DNA[ARR[i] + temp]) goto L8
+SB R13, ARR(R11) 	;swap(ARR[i-1], ARR[i])
 SB R12, ARR(R10)	
 DADDU R17, R10, R0 	;newn = i	
 
